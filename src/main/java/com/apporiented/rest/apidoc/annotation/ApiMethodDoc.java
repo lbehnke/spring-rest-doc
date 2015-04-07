@@ -13,11 +13,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiMethodDoc {
 
-    /**
-     * A description of what the method does
-     *
-     * @return
-     */
     public String value() default "";
 
 }

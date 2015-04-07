@@ -14,12 +14,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiHeadersDoc {
 
-    /**
-     * An array of ApiHeaderDoc annotations
-     *
-     * @return
-     * @see ApiHeaderDoc
-     */
     public ApiHeaderDoc[] value() default {};
 
 }

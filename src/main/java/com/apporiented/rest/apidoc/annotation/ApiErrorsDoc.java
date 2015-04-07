@@ -14,12 +14,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiErrorsDoc {
 
-    /**
-     * An array of ApiErrorDoc annotations
-     *
-     * @return
-     * @see ApiErrorDoc
-     */
     ApiErrorDoc[] value() default {};
 
 }
