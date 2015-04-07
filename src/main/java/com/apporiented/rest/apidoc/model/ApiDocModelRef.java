@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlType;
  * Representation of a model reference.
  *
  * @author Lars Behnke
- * @apiviz.owns java.lang.Class - modelClasses
  */
 @ApiModelDoc("Representation of a model reference.")
 @XmlRootElement(name = "apiBodyObjectDocModel")
