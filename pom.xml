@@ -22,7 +22,7 @@
     <groupId>com.apporiented</groupId>
     <artifactId>spring-rest-doc</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Runtime documentation of REST APIs based on the Spring Framework.</name>
+    <name>Runtime documentation of REST APIs based on the Spring and JAXB annotations.</name>
     <packaging>jar</packaging>
 
     <inceptionYear>2015</inceptionYear>
@@ -42,7 +42,6 @@
     <properties>
         <github.global.server>github</github.global.server>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
 
         <!--
             Guava is a suite of core and expanded libraries that include utility classes, google's collections,
