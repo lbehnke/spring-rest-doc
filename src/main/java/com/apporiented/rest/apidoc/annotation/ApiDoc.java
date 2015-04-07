@@ -13,18 +13,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiDoc {
 
-    /**
-     * A description of what the API does
-     *
-     * @return
-     */
     public String description();
 
-    /**
-     * The name of the API
-     *
-     * @return
-     */
     public String name();
 
 }

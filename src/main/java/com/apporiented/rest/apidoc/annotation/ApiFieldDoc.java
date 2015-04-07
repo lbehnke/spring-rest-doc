@@ -13,25 +13,11 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiFieldDoc {
 
-    /**
-     * A description of what the field is
-     *
-     * @return
-     */
+
     public String value() default "";
 
-    /**
-     * The format pattern for this field
-     *
-     * @return
-     */
     public String format() default "";
 
-    /**
-     * The allowed values for this field
-     *
-     * @return
-     */
     public String[] allowedValues() default {};
 
 }

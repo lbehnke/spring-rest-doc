@@ -14,18 +14,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiHeaderDoc {
 
-    /**
-     * The name of the header parameter
-     *
-     * @return
-     */
     public String name();
 
-    /**
-     * A description of what the parameter is needed for
-     *
-     * @return
-     */
     public String description();
 
 }

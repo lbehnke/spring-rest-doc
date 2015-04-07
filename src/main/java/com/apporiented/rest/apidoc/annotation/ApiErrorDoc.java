@@ -14,18 +14,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiErrorDoc {
 
-    /**
-     * The error code returned
-     *
-     * @return
-     */
     public int code();
 
-    /**
-     * A description of what the error code means
-     *
-     * @return
-     */
     public String description();
 
 }
