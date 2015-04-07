@@ -24,6 +24,10 @@
     <name>Runtime documentation of REST APIs based on the Spring and JAXB annotations.</name>
     <packaging>jar</packaging>
 
+    <description>
+        Runtime documentation of REST APIs based on Spring MVC and JAXB.
+    </description>
+
     <inceptionYear>2015</inceptionYear>
     <url>https://github.com/lbehnke/spring-rest-doc</url>
     <developers>
