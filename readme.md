@@ -1,11 +1,9 @@
 Spring REST Doc
 ===============
 
-This is a runtime REST API documentation generator based on [JSONDoc 1.0.1](https://github.com/fabiomaffioletti/jsondoc/releases/tag/v1.0.1). 
+This is a simple runtime REST API documentation generator based on [JSONDoc 1.0.1](https://github.com/fabiomaffioletti/jsondoc/releases/tag/v1.0.1). 
 It reads [Spring MVC](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html), 
 [JAXB](https://jaxb.java.net/) annotations, and a set of own annotations. 
-
-Example:
 
 Example data transfer object returned by the REST controller:
 
