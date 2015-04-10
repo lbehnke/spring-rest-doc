@@ -6,17 +6,18 @@ import com.apporiented.rest.apidoc.model.ApiDocModelRef;
 import com.apporiented.rest.apidoc.model.ApiModelDocModel;
 import com.apporiented.rest.apidoc.model.ApiModelFieldDocModel;
 import com.apporiented.rest.apidoc.utils.ApiDocConstants;
+import com.google.common.reflect.Reflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.xml.bind.annotation.*;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.beans.*;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -80,6 +81,7 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
             XmlElement elem = null;
             XmlElementWrapper elems = null;
             XmlAttribute attr = null;
+            XmlJavaTypeAdapter adapter = null;
             ApiFieldDoc doc = null;
 
             Type genericResultType = null;
@@ -91,6 +93,7 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
                 elems = getter.getAnnotation(XmlElementWrapper.class);
                 attr = getter.getAnnotation(XmlAttribute.class);
                 doc = getter.getAnnotation(ApiFieldDoc.class);
+                adapter = getter.getAnnotation(XmlJavaTypeAdapter.class);
                 genericResultType = getter.getGenericReturnType();
             }
             if (field != null) {
@@ -100,7 +103,7 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
                 doc = doc == null ? field.getAnnotation(ApiFieldDoc.class) : doc;
                 genericResultType = genericResultType == null ? field.getGenericType() : genericResultType;
                 trans = trans == null ? field.getAnnotation(XmlTransient.class) : trans;
-
+                adapter = adapter == null ? field.getAnnotation(XmlJavaTypeAdapter.class) : adapter;
             }
 
             if (trans != null) {
@@ -123,6 +126,19 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
                 xmlName = attr.name();
                 required = attr.required();
                 xmlNodeType = XML_NODE_ATTR;
+            }
+
+            /* Adapters */
+            if (adapter != null) {
+                Class<? extends XmlAdapter> adapterClass = adapter.value();
+                try {
+                    Method marshalMethod = ReflectionUtils.findMethod(adapterClass, "marshal", resultType);
+                    genericResultType = marshalMethod.getGenericReturnType();
+                    resultType = marshalMethod.getReturnType();
+                } catch (Exception e) {
+                    log.warn("Could not introspect bean class " + clazz.getName() + ". No API documentation will be available for this class.");
+                    continue;
+                }
             }
 
             fieldModel.setName(createFieldName(propertyDescriptor, xmlName));
