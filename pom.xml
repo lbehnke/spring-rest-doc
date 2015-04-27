@@ -21,11 +21,11 @@
     <groupId>com.apporiented</groupId>
     <artifactId>spring-rest-doc</artifactId>
     <version>1.4-SNAPSHOT</version>
-    <name>Runtime documentation of REST APIs based on the Spring and JAXB annotations.</name>
+    <name>Runtime documentation of REST APIs</name>
     <packaging>jar</packaging>
 
     <description>
-        Runtime documentation of REST APIs based on Spring MVC and JAXB.
+        Runtime documentation of REST APIs based on the Spring and JAXB annotations.
     </description>
 
     <inceptionYear>2015</inceptionYear>
