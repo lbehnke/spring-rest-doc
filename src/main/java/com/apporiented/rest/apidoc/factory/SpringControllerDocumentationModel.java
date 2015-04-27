@@ -96,6 +96,10 @@ public class SpringControllerDocumentationModel implements ControllerDocumentati
                         || ResponseEntity.class.isAssignableFrom(returnType)
                         || DeferredResult.class.isAssignableFrom(returnType)) {
                     apiMethodDocModel.setResponse(getReturnObject(method));
+
+                    if (DeferredResult.class.isAssignableFrom(returnType)) {
+                        apiMethodDocModel.setAsync(true);
+                    }
                 }
 
                 apiMethodDocModel.setApiErrors(createErrorDoc(errors));

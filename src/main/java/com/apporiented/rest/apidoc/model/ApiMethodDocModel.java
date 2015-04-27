@@ -18,6 +18,7 @@ public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
     private static final String[] ACTIONS = new String[]{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"};
     private String action;
     private String path;
+    private boolean async;
     private String methodName;
     private String description;
     private List<ApiHeaderDocModel> headers;
@@ -99,6 +100,15 @@ public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
 
     public void setMethodName(String name) {
         this.methodName = name;
+    }
+
+    @XmlAttribute(name = "async")
+    public boolean isAsync() {
+        return async;
+    }
+
+    public void setAsync(boolean async) {
+        this.async = async;
     }
 
     @XmlElement(name = "description", required = false)

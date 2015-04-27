@@ -1,12 +1,12 @@
 package com.apporiented.rest.apidoc.factory;
 
 import com.apporiented.rest.apidoc.annotation.ApiFieldDoc;
+import com.apporiented.rest.apidoc.annotation.ApiAdaptedTypeDoc;
 import com.apporiented.rest.apidoc.annotation.ApiModelDoc;
 import com.apporiented.rest.apidoc.model.ApiDocModelRef;
 import com.apporiented.rest.apidoc.model.ApiModelDocModel;
 import com.apporiented.rest.apidoc.model.ApiModelFieldDocModel;
 import com.apporiented.rest.apidoc.utils.ApiDocConstants;
-import com.google.common.reflect.Reflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -109,9 +109,18 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
             if (trans != null) {
                 continue;
             }
+            String format = null;
+            String[] allowedValues = null;
+            if (doc != null) {
+                if (doc.format().length() > 0) {
+                    format = doc.format();
+                }
+                if (doc.allowedValues().length > 0) {
+                    allowedValues = doc.allowedValues();
+                }
+            }
 
             String xmlNodeType = XML_NODE_ELEM;
-            ;
             String xmlName = null;
             boolean required = false;
             if (elems != null) {
@@ -132,9 +141,25 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
             if (adapter != null) {
                 Class<? extends XmlAdapter> adapterClass = adapter.value();
                 try {
-                    Method marshalMethod = ReflectionUtils.findMethod(adapterClass, "marshal", resultType);
-                    genericResultType = marshalMethod.getGenericReturnType();
-                    resultType = marshalMethod.getReturnType();
+                    ApiAdaptedTypeDoc td = adapterClass.getAnnotation(ApiAdaptedTypeDoc.class);
+                    if (td != null) {
+                        resultType = td.value();
+
+                        /* Set allowed values if not already defined (field config has precedence */
+                        if (allowedValues == null && td.allowedValues() != null && td.allowedValues().length > 0) {
+                            allowedValues = td.allowedValues();
+                        }
+
+                        /* Set format if not already defined (field config has precedence */
+                        if (format == null && td.format() != null && td.format().length() > 0) {
+                            format = td.format();
+                        }
+                    }
+                    else {
+                        Method marshalMethod = ReflectionUtils.findMethod(adapterClass, "marshal", resultType);
+                        genericResultType = marshalMethod.getGenericReturnType();
+                        resultType = marshalMethod.getReturnType();
+                    }
                 } catch (Exception e) {
                     log.warn("Could not introspect bean class " + clazz.getName() + ". No API documentation will be available for this class.");
                     continue;
@@ -146,9 +171,15 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
             fieldModel.setXmlNodeType(xmlNodeType);
             if (doc != null) {
                 fieldModel.setDescription(doc.value());
-                fieldModel.setFormat(doc.format());
             }
-            fieldModel.setAllowedValues(createAllowedValues(resultType, doc));
+
+            /* Derive allowed values from type if possible (enums!) */
+            if (allowedValues == null) {
+                allowedValues = createAllowedValues(resultType);
+            }
+            fieldModel.setAllowedValues(allowedValues);
+            fieldModel.setFormat(format);
+
             ApiDocModelRef modelRef = createModelRef(resultType, genericResultType);
             if (modelRef != null) {
                 fieldModel.setMultiple(modelRef.getMultiple());
@@ -161,18 +192,6 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
             fieldModels.add(fieldModel);
         }
 
-        /* Handle super classes
-        Class<?> c = clazz.getSuperclass();
-        if (c != null) {
-            if (c.isAnnotationPresent(ApiModelDoc.class)) {
-                ApiModelDocModel superDoc = createModelDocModel(c);
-                if (superDoc != null && superDoc.getFields() != null) {
-                    fieldModels.addAll(superDoc.getFields());
-                }
-            }
-        }
-        */
-
         /* Sort fields alphabetically */
         List<ApiModelFieldDocModel> sortedFields = new ArrayList<>();
         sortedFields.addAll(fieldModels);
@@ -182,11 +201,9 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
         return objectModel;
     }
 
-    private String[] createAllowedValues(Class<?> resultType, ApiFieldDoc fieldDoc) {
+    private String[] createAllowedValues(Class<?> resultType) {
         String[] allowedValues = null;
-        if (fieldDoc != null && fieldDoc.allowedValues().length > 0) {
-            allowedValues = fieldDoc.allowedValues();
-        } else if (resultType.isEnum()) {
+        if (resultType.isEnum()) {
             List<String> consts = new ArrayList<>();
             for (Object o : resultType.getEnumConstants()) {
                 if (!consts.contains(o.toString())) {
@@ -315,9 +332,12 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
                     name = beanInfo.getBeanDescriptor().getName();
                 }
             }
-
         }
-        return name == null ? null : StringUtils.uncapitalize(name);
+        if (name != null) {
+            name = StringUtils.uncapitalize(name);
+        }
+
+        return name;
     }
 
 
