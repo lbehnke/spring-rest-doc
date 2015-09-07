@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
 @ApiModelDoc("Representation of a model reference.")
 @XmlRootElement(name = "apiBodyObjectDocModel")
 @XmlType(propOrder = {"modelRef", "multiple", "mapKeyObject", "mapValueObject", "map"})
-public class ApiDocModelRef {
+public class ApiDocModelRef implements Comparable<ApiDocModelRef> {
     private String modelRef;
     private Boolean multiple;
     private String mapKeyObject;
@@ -92,5 +92,10 @@ public class ApiDocModelRef {
         this.modelClass = modelClass;
     }
 
-
+    @Override
+    public int compareTo(ApiDocModelRef o) {
+        String s1 = getModelRef() == null ? "" : getModelRef();
+        String s2 = (o == null || o.getModelRef() == null) ? "" : o.getModelRef();
+        return s1.compareTo(s2);
+    }
 }

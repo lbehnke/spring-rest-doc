@@ -16,11 +16,12 @@ import java.util.Set;
 
 @ApiModelDoc("REST resource documentation.")
 @XmlRootElement(name = "apiDoc")
-@XmlType(propOrder = {"name", "className", "description", "methods"})
+@XmlType(propOrder = {"name", "className", "description", "errorResponseClass", "methods"})
 public class ApiDocModel implements Comparable<ApiDocModel> {
     private String name;
     private String className;
     private String description;
+    private List<ApiDocModelRef> errorResponses;
     private List<ApiMethodDocModel> methods;
     private Set<Class<?>> modelClasses;
 
@@ -55,6 +56,15 @@ public class ApiDocModel implements Comparable<ApiDocModel> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @XmlElement(name = "errorResponses", required = false)
+    public List<ApiDocModelRef> getErrorResponses() {
+        return errorResponses;
+    }
+
+    public void setErrorResponses(List<ApiDocModelRef> errorResponses) {
+        this.errorResponses = errorResponses;
     }
 
     @XmlElementWrapper(name = "methods")

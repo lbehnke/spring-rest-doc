@@ -13,7 +13,7 @@ import java.util.List;
  */
 @ApiModelDoc("Model of a REST resource method documentation.")
 @XmlRootElement(name = "apiMethodDocModel")
-@XmlType(propOrder = {"action", "path", "methodName", "hint", "description", "headers", "consumes", "produces", "parameters", "bodyObject", "response", "apiErrors"})
+@XmlType(propOrder = {"action", "path", "methodName", "hint", "description", "mappingHeaders", "mappingParams", "consumes", "produces", "parameters", "bodyObject", "response", "apiErrors"})
 public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
     private static final String[] ACTIONS = new String[]{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"};
     private String action;
@@ -21,12 +21,13 @@ public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
     private boolean async;
     private String methodName;
     private String description;
-    private List<ApiHeaderDocModel> headers;
+    private List<String> mappingHeaders;
+    private List<String> mappingParams;
     private List<String> consumes;
     private List<String> produces;
     private List<ApiParamDocModel> parameters;
     private ApiDocModelRef bodyObject;
-    private ApiDocModelRef response;
+    private List<ApiDocModelRef> responses;
     private List<ApiErrorDocModel> apiErrors;
 
     private String hint;
@@ -41,18 +42,30 @@ public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
         return hint;
     }
 
+
+    @XmlElementWrapper(name = "mappingHeaderList", required = false)
+    @XmlElement(name = "header", required = false)
+    public List<String> getMappingHeaders() {
+        return mappingHeaders;
+    }
+
+    public void setMappingHeaders(List<String> mappingHeaders) {
+        this.mappingHeaders = mappingHeaders;
+    }
+
+
+    @XmlElementWrapper(name = "mappingParamList", required = false)
+    @XmlElement(name = "mappingParam", required = false)
+    public List<String> getMappingParams() {
+        return mappingParams;
+    }
+
+    public void setMappingParams(List<String> mappingParams) {
+        this.mappingParams = mappingParams;
+    }
+
     public void setHint(String hint) {
         this.hint = hint;
-    }
-
-    @XmlElementWrapper(name = "headers")
-    @XmlElement(name = "header", required = false)
-    public List<ApiHeaderDocModel> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(List<ApiHeaderDocModel> headers) {
-        this.headers = headers;
     }
 
     @XmlElementWrapper(name = "producesList", required = false)
@@ -130,13 +143,14 @@ public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
         this.parameters = parameters;
     }
 
+    @XmlElementWrapper(name = "responses", required = false)
     @XmlElement(name = "response", required = false)
-    public ApiDocModelRef getResponse() {
-        return response;
+    public List<ApiDocModelRef> getResponses() {
+        return responses;
     }
 
-    public void setResponse(ApiDocModelRef response) {
-        this.response = response;
+    public void setResponses(List<ApiDocModelRef> responses) {
+        this.responses = responses;
     }
 
     @XmlElement(name = "bodyObject", required = false)

@@ -15,4 +15,6 @@ public @interface ApiMethodDoc {
 
     public String value() default "";
 
+    public Class<?>[] responseClasses() default {};
+
 }

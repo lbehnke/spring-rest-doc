@@ -17,4 +17,6 @@ public @interface ApiDoc {
 
     public String name();
 
+    public Class<?>[] errorResponseClasses() default {};
+
 }

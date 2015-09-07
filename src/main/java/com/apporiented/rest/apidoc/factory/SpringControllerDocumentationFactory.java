@@ -24,11 +24,11 @@ import java.util.List;
  *
  * @author Lars Behnke
  */
-public class SpringControllerDocumentationModel implements ControllerDocumentationFactory {
+public class SpringControllerDocumentationFactory implements ControllerDocumentationFactory {
 
     private ModelDocumentationFactory modelDocumentationFactory;
 
-    public SpringControllerDocumentationModel(ModelDocumentationFactory modelDocumentationFactory) {
+    public SpringControllerDocumentationFactory(ModelDocumentationFactory modelDocumentationFactory) {
         this.modelDocumentationFactory = modelDocumentationFactory;
     }
 
@@ -42,13 +42,26 @@ public class SpringControllerDocumentationModel implements ControllerDocumentati
         apiDoc.setDescription(doc.description());
         apiDoc.setName(doc.name());
         apiDoc.setClassName(ctrlClass.getSimpleName());
+
+        Class<?>[] errorClasses = doc.errorResponseClasses();
+        List<ApiDocModelRef> errorResponses = new ArrayList<>();
+        for (Class<?> errorClass : errorClasses) {
+            apiDoc.getModelClasses().add(errorClass);
+            ApiDocModelRef ref = modelDocumentationFactory.createModelRef(errorClass, null);
+            errorResponses.add(ref);
+        }
+        Collections.sort(errorResponses);
+        apiDoc.setErrorResponses(errorResponses);
+
         List<ApiMethodDocModel> methods = new ArrayList<>(createApiMethodDocs(ctrlClass));
         Collections.sort(methods);
         apiDoc.setMethods(methods);
 
         for (ApiMethodDocModel apiMethodDocModel : apiDoc.getMethods()) {
-            if (apiMethodDocModel.getResponse() != null) {
-                apiDoc.getModelClasses().add(apiMethodDocModel.getResponse().getModelClass());
+            if (apiMethodDocModel.getResponses() != null) {
+                for (ApiDocModelRef ref : apiMethodDocModel.getResponses()) {
+                    apiDoc.getModelClasses().add(ref.getModelClass());
+                }
             }
             if (apiMethodDocModel.getBodyObject() != null) {
                 apiDoc.getModelClasses().add(apiMethodDocModel.getBodyObject().getModelClass());
@@ -71,7 +84,6 @@ public class SpringControllerDocumentationModel implements ControllerDocumentati
                 RequestMapping classMapping = controllerClass.getAnnotation(RequestMapping.class);
                 RequestMapping methodMapping = method.getAnnotation(RequestMapping.class);
                 ResponseBody responseBody = method.getAnnotation(ResponseBody.class);
-                ApiHeadersDoc headers = method.getAnnotation(ApiHeadersDoc.class);
                 ApiErrorsDoc errors = method.getAnnotation(ApiErrorsDoc.class);
                 Deprecated depr = method.getAnnotation(Deprecated.class);
 
@@ -83,27 +95,38 @@ public class SpringControllerDocumentationModel implements ControllerDocumentati
                 apiMethodDocModel.setPath(path.toString());
                 apiMethodDocModel.setAction(StringUtils.arrayToCommaDelimitedString(methodMapping.method()));
                 apiMethodDocModel.setDescription(apiAnnotation.value());
-                apiMethodDocModel.setHeaders(createHeaderDocModels(headers));
                 apiMethodDocModel.setProduces(getProducesList(classMapping, methodMapping));
                 apiMethodDocModel.setConsumes(getConsumesList(classMapping, methodMapping));
+                apiMethodDocModel.setMappingHeaders(getHeadersList(classMapping, methodMapping));
+                apiMethodDocModel.setMappingParams (getParamsList(classMapping, methodMapping));
+
                 apiMethodDocModel.setParameters(createApiParamDocs(method));
                 apiMethodDocModel.setBodyObject(createBodyObjectModel(method));
                 apiMethodDocModel.setHint(createHint(depr));
                 apiMethodDocModel.setMethodName(method.getName());
 
-                if (restController
-                        || responseBody != null
-                        || ResponseEntity.class.isAssignableFrom(returnType)
-                        || DeferredResult.class.isAssignableFrom(returnType)) {
-                    apiMethodDocModel.setResponse(getReturnObject(method));
-
-                    if (DeferredResult.class.isAssignableFrom(returnType)) {
-                        apiMethodDocModel.setAsync(true);
-                    }
+                List<ApiDocModelRef> responseClasses = new ArrayList<>();
+                for (Class<?> responseClass : apiAnnotation.responseClasses()) {
+                    ApiDocModelRef ref = modelDocumentationFactory.createModelRef(responseClass, null);
+                    responseClasses.add(ref);
                 }
 
-                apiMethodDocModel.setApiErrors(createErrorDoc(errors));
+                /* if not explicitly declared, analyze method return type */
+                if (responseClasses.size() == 0) {
+                    if (restController
+                            || responseBody != null
+                            || ResponseEntity.class.isAssignableFrom(returnType)
+                            || DeferredResult.class.isAssignableFrom(returnType)) {
+                        responseClasses.add(getReturnObject(method));
 
+                        if (DeferredResult.class.isAssignableFrom(returnType)) {
+                            apiMethodDocModel.setAsync(true);
+                        }
+                    }
+                }
+                Collections.sort(responseClasses);
+                apiMethodDocModel.setResponses(responseClasses);
+                apiMethodDocModel.setApiErrors(createErrorDoc(errors));
                 apiMethodDocModels.add(apiMethodDocModel);
             }
 
@@ -119,18 +142,6 @@ public class SpringControllerDocumentationModel implements ControllerDocumentati
         return sb.length() > 0 ? sb.toString() : null;
     }
 
-
-    private List<ApiHeaderDocModel> createHeaderDocModels(ApiHeadersDoc annotation) {
-        List<ApiHeaderDocModel> headers = new ArrayList<>();
-        if (annotation != null && annotation.value().length > 0) {
-            headers = new ArrayList<>();
-            for (ApiHeaderDoc apiHeaderDoc : annotation.value()) {
-                headers.add(new ApiHeaderDocModel(apiHeaderDoc.name(), apiHeaderDoc.description()));
-            }
-        }
-        return headers.size() > 0 ? headers : null;
-    }
-
     private List<ApiErrorDocModel> createErrorDoc(ApiErrorsDoc annotation) {
         List<ApiErrorDocModel> errors = null;
         if (annotation != null) {
@@ -138,11 +149,9 @@ public class SpringControllerDocumentationModel implements ControllerDocumentati
             for (ApiErrorDoc apiErrorDoc : annotation.value()) {
                 errors.add(new ApiErrorDocModel(apiErrorDoc.code(), apiErrorDoc.description()));
             }
-
         }
         return errors;
     }
-
 
     private List<String> getProducesList(RequestMapping classMapping, RequestMapping methodMapping) {
         List<String> produces;
@@ -163,6 +172,26 @@ public class SpringControllerDocumentationModel implements ControllerDocumentati
             consumes = Arrays.asList(classMapping.consumes());
         }
         return consumes.size() > 0 ? consumes : null;
+    }
+
+    private List<String> getParamsList(RequestMapping classMapping, RequestMapping methodMapping) {
+        List<String> params;
+        if (methodMapping.params().length > 0) {
+            params = Arrays.asList(methodMapping.params());
+        } else {
+            params = Arrays.asList(classMapping.params());
+        }
+        return params.size() > 0 ? params : null;
+    }
+
+    private List<String> getHeadersList(RequestMapping classMapping, RequestMapping methodMapping) {
+        List<String> headers;
+        if (methodMapping.headers().length > 0) {
+            headers = Arrays.asList(methodMapping.headers());
+        } else {
+            headers = Arrays.asList(classMapping.headers());
+        }
+        return headers.size() > 0 ? headers : null;
     }
 
     private void appendMappedPath(RequestMapping mapping, StringBuffer path) {

@@ -39,7 +39,7 @@ public class DefaultDocumentationFactory implements DocumentationFactory {
 
     public DefaultDocumentationFactory() {
         this.modelDocFactory = new JAXBModelDocFactory();
-        this.ctrlDocFactory = new SpringControllerDocumentationModel(modelDocFactory);
+        this.ctrlDocFactory = new SpringControllerDocumentationFactory(modelDocFactory);
     }
 
     public DefaultDocumentationFactory(ControllerDocumentationFactory ctrlDocFactory, ModelDocumentationFactory modelDocFactory) {
