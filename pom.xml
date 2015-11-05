@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apporiented</groupId>
     <artifactId>spring-rest-doc</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <name>Runtime documentation of REST APIs</name>
     <packaging>jar</packaging>
 
