@@ -1,8 +1,5 @@
 package com.apporiented.rest.apidoc;
 
-/**
- * @author Lars Behnke <lars.behnke@bruker.com>
- */
 public class ConfigurationException extends RuntimeException {
     public ConfigurationException() {
     }
