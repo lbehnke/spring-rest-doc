@@ -1,12 +1,14 @@
-package com.apporiented.rest.apidoc.factory;
+package com.apporiented.rest.apidoc.factory.impl;
 
+import com.apporiented.rest.apidoc.ConfigurationException;
 import com.apporiented.rest.apidoc.annotation.ApiFieldDoc;
 import com.apporiented.rest.apidoc.annotation.ApiAdaptedTypeDoc;
 import com.apporiented.rest.apidoc.annotation.ApiModelDoc;
+import com.apporiented.rest.apidoc.factory.ModelDocumentationFactory;
 import com.apporiented.rest.apidoc.model.ApiDocModelRef;
 import com.apporiented.rest.apidoc.model.ApiModelDocModel;
 import com.apporiented.rest.apidoc.model.ApiModelFieldDocModel;
-import com.apporiented.rest.apidoc.utils.ApiDocConstants;
+import com.apporiented.rest.apidoc.ApiDocConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -41,21 +43,20 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
         /* Checks */
         ApiModelDoc objDoc = (ApiModelDoc) clazz.getAnnotation(ApiModelDoc.class);
         if (objDoc == null) {
-            return null;
+            throw new ConfigurationException("Missing @ApiModelDoc annotation (class " + clazz.getName() + ")");
         }
         BeanInfo beanInfo;
         try {
             beanInfo = Introspector.getBeanInfo(clazz);
         } catch (IntrospectionException e) {
-            log.warn("Could not introspect bean class " + clazz.getName() + ". No API documentation will be available for this class.");
-            return null;
+            throw new ConfigurationException("Could not introspect bean class " + clazz.getName(), e);
         }
 
         ApiModelDocModel objectModel = new ApiModelDocModel();
 
         /* Handle class data */
         objectModel.setName(createModelReferenceId(clazz));
-        objectModel.setDescription(objDoc.value());
+        objectModel.setDescription(objDoc == null ? "" : objDoc.value());
         objectModel.setClassName(clazz.getSimpleName());
 
         /* Handle fields */
@@ -161,8 +162,7 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
                         resultType = marshalMethod.getReturnType();
                     }
                 } catch (Exception e) {
-                    log.warn("Could not introspect bean class " + clazz.getName() + ". No API documentation will be available for this class.");
-                    continue;
+                    throw new ConfigurationException("Could not introspect bean class " + clazz.getName(), e);
                 }
             }
 

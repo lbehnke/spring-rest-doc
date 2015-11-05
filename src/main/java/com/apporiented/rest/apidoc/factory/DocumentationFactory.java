@@ -1,6 +1,7 @@
 package com.apporiented.rest.apidoc.factory;
 
 
+import com.apporiented.rest.apidoc.ConfigurationException;
 import com.apporiented.rest.apidoc.model.Documentation;
 
 /**

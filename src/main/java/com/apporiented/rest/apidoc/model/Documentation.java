@@ -4,7 +4,9 @@ import com.apporiented.rest.apidoc.annotation.ApiFieldDoc;
 import com.apporiented.rest.apidoc.annotation.ApiModelDoc;
 
 import javax.xml.bind.annotation.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Model of the documentation of the complete REST API including used data transfer objects.
@@ -75,5 +77,6 @@ public class Documentation {
     public void setBasePath(String basePath) {
         this.basePath = basePath;
     }
+
 
 }

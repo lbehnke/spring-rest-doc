@@ -1,9 +1,12 @@
-package com.apporiented.rest.apidoc.factory;
+package com.apporiented.rest.apidoc.factory.impl;
 
+import com.apporiented.rest.apidoc.ConfigurationException;
 import com.apporiented.rest.apidoc.annotation.*;
+import com.apporiented.rest.apidoc.factory.ControllerDocumentationFactory;
+import com.apporiented.rest.apidoc.factory.ModelDocumentationFactory;
 import com.apporiented.rest.apidoc.model.*;
-import com.apporiented.rest.apidoc.utils.ApiDocConstants;
-import com.apporiented.rest.apidoc.utils.ApiParamType;
+import com.apporiented.rest.apidoc.ApiDocConstants;
+import com.apporiented.rest.apidoc.ApiParamType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +38,7 @@ public class SpringControllerDocumentationFactory implements ControllerDocumenta
     public ApiDocModel createApiDocModel(Class<?> ctrlClass) {
         ApiDoc doc = ctrlClass.getAnnotation(ApiDoc.class);
         if (doc == null) {
-            return null;
+            throw new ConfigurationException("Missing @ApiDoc annotation on class " + ctrlClass.getName());
         }
 
         ApiDocModel apiDoc = new ApiDocModel();

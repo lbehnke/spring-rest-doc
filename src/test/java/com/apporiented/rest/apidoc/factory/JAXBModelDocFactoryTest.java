@@ -3,6 +3,7 @@ package com.apporiented.rest.apidoc.factory;
 import com.apporiented.rest.apidoc.annotation.ApiAdaptedTypeDoc;
 import com.apporiented.rest.apidoc.annotation.ApiFieldDoc;
 import com.apporiented.rest.apidoc.annotation.ApiModelDoc;
+import com.apporiented.rest.apidoc.factory.impl.JAXBModelDocFactory;
 import com.apporiented.rest.apidoc.model.ApiModelDocModel;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +15,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.Assert.*;

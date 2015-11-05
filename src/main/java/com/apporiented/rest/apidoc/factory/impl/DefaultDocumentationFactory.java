@@ -1,12 +1,17 @@
-package com.apporiented.rest.apidoc.factory;
+package com.apporiented.rest.apidoc.factory.impl;
 
 
+import com.apporiented.rest.apidoc.ConfigurationException;
 import com.apporiented.rest.apidoc.annotation.ApiDoc;
 import com.apporiented.rest.apidoc.annotation.ApiModelDoc;
+import com.apporiented.rest.apidoc.factory.ControllerDocumentationFactory;
+import com.apporiented.rest.apidoc.factory.DocumentationFactory;
+import com.apporiented.rest.apidoc.factory.ModelDocumentationFactory;
 import com.apporiented.rest.apidoc.model.ApiDocModel;
 import com.apporiented.rest.apidoc.model.ApiDocModels;
 import com.apporiented.rest.apidoc.model.ApiModelDocModel;
 import com.apporiented.rest.apidoc.model.Documentation;
+import com.google.common.base.Strings;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -96,8 +101,10 @@ public class DefaultDocumentationFactory implements DocumentationFactory {
             try {
                 ApiDocModel api = ctrlDocFactory.createApiDocModel(ctrlClass);
                 apiDocModels.addApiModel(api);
+            } catch (ConfigurationException e) {
+                throw e;
             } catch (Exception e) {
-                log.error("Could not create API documentation for controller class " + ctrlClass, e);
+                throw new ConfigurationException("Could not create API documentation for controller class " + ctrlClass);
             }
         }
         return apiDocModels;
@@ -105,15 +112,25 @@ public class DefaultDocumentationFactory implements DocumentationFactory {
 
     private Set<ApiModelDocModel> createApiObjectDocs(Set<Class<?>> dtoClasses) {
         Set<ApiModelDocModel> dtoClassDocs = new TreeSet<>();
+        Set<String> dtoNames = new HashSet<>();
         for (Class<?> dtoClass : dtoClasses) {
-            if (dtoClass != null) {
+            if (dtoClass != null && !dtoClass.equals(void.class)) {
                 try {
                     ApiModelDocModel m = modelDocFactory.createModelDocModel(dtoClass);
                     if (m != null) {
+                        if (Strings.isNullOrEmpty(m.getName())) {
+                            throw new ConfigurationException("Missing DTO name, class " + m.getClassName());
+                        }
+                        if (dtoNames.contains(m.getName().toUpperCase())) {
+                            throw new ConfigurationException("Duplicate DTO name: " + m.getName() + ", class " + m.getClassName());
+                        }
+                        dtoNames.add(m.getName().toUpperCase());
                         dtoClassDocs.add(m);
                     }
+                } catch (ConfigurationException e) {
+                    throw e;
                 } catch (Exception e) {
-                    log.error("Could not create API documentation for DTO class " + dtoClass, e);
+                    throw new ConfigurationException("Could not create API documentation for DTO class " + dtoClass, e);
                 }
             } else {
                 log.warn("DTO list contains NULL value.");

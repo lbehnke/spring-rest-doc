@@ -1,4 +1,4 @@
-package com.apporiented.rest.apidoc.utils;
+package com.apporiented.rest.apidoc;
 
 /**
  * Constants of the API documentation module.

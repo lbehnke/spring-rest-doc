@@ -1,7 +1,7 @@
 package com.apporiented.rest.apidoc.model;
 
 import com.apporiented.rest.apidoc.annotation.ApiModelDoc;
-import com.apporiented.rest.apidoc.utils.ApiParamType;
+import com.apporiented.rest.apidoc.ApiParamType;
 
 import javax.xml.bind.annotation.*;
 
