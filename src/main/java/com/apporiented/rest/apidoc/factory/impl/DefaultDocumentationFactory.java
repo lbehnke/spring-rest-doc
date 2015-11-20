@@ -132,8 +132,6 @@ public class DefaultDocumentationFactory implements DocumentationFactory {
                 } catch (Exception e) {
                     throw new ConfigurationException("Could not create API documentation for DTO class " + dtoClass, e);
                 }
-            } else {
-                log.warn("DTO list contains NULL value.");
             }
         }
         return dtoClassDocs;
