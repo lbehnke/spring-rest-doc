@@ -3,7 +3,7 @@ package com.apporiented.rest.apidoc.annotation;
 import java.lang.annotation.*;
 
 /**
- * This annotations is to be used inside an annotations of type ApiParams
+ * Description of a REST resource parameter.
  *
  * @author Fabio Maffioletti
  * @author Lars Behnke
@@ -14,12 +14,21 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiParamDoc {
 
-    public String value() default "";
+    enum EmptyEnum {}
 
-    public String[] allowedValues() default {};
+    String value() default "";
 
-    public String format() default "";
+    String[] allowedValues() default {};
 
-    public String dataType() default "";
+    /**
+     * Intended for REST interfaces that accept string values as parameters,
+     * which are mapped to enum types by the application.
+     * @return The enum class
+     */
+    Class<? extends Enum> enumClass() default EmptyEnum.class;
+
+    String format() default "";
+
+    String dataType() default "";
 
 }

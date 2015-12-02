@@ -13,7 +13,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiFieldDoc {
 
-
     public String value() default "";
 
     public String format() default "";

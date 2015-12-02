@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -265,8 +266,24 @@ public class SpringControllerDocumentationFactory implements ControllerDocumenta
                 apiParamDocModel = new ApiParamDocModel();
                 if (apiParamDocAnn != null) {
                     apiParamDocModel.setDescription(nullIfEmpty(apiParamDocAnn.value()));
-                    apiParamDocModel.setAllowedValues(nullIfEmpty(apiParamDocAnn.allowedValues()));
                     apiParamDocModel.setFormat(nullIfEmpty(apiParamDocAnn.format()));
+                    apiParamDocModel.setAllowedValues(nullIfEmpty(apiParamDocAnn.allowedValues()));
+
+                    /* If enum class defined, add content */
+                    Class<? extends Enum> c = apiParamDocAnn.enumClass();
+                    Field[] flds = c.getDeclaredFields();
+                    List<String> cst = new ArrayList<>();
+                    for (Field f : flds) {
+                        if (f.isEnumConstant())
+                            cst.add(f.getName());
+                    }
+                    if (cst.size() > 0) {
+                        if (apiParamDocModel.getAllowedValues() != null) {
+                            cst.addAll(Arrays.asList(apiParamDocModel.getAllowedValues()));
+                        }
+                        apiParamDocModel.setAllowedValues(cst.toArray(new String[cst.size()]));
+                    }
+
                     apiDataType = apiParamDocAnn.dataType();
                 }
 
