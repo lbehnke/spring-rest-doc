@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apporiented</groupId>
     <artifactId>spring-rest-doc</artifactId>
-    <version>1.6</version>
+    <version>1.7-SNAPSHOT</version>
     <name>Runtime documentation of REST APIs</name>
     <packaging>jar</packaging>
 
@@ -127,7 +127,7 @@
         <url>https://github.com/lbehnke/spring-rest-doc</url>
         <connection>scm:git:git://github.com/lbehnke/spring-rest-doc.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/lbehnke/spring-rest-doc.git</developerConnection>
-        <tag>v1.6</tag>
+        <tag>HEAD</tag>
     </scm>
 
  <build>
