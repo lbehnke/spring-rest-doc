@@ -13,13 +13,14 @@ import java.util.List;
  */
 @ApiModelDoc("Model of a REST resource method documentation.")
 @XmlRootElement(name = "apiMethodDocModel")
-@XmlType(propOrder = {"action", "path", "methodName", "hint", "description", "mappingHeaders", "mappingParams", "consumes", "produces", "parameters", "bodyObject", "response", "apiErrors"})
+@XmlType(propOrder = {"action", "path", "methodName", "hint", "description", "mappingHeaders", "mappingParams", "consumes", "produces", "parameters", "bodyObject", "responses", "apiErrors"})
 public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
     private static final String[] ACTIONS = new String[]{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"};
     private String action;
     private String path;
     private boolean async;
     private String methodName;
+    private String hint;
     private String description;
     private List<String> mappingHeaders;
     private List<String> mappingParams;
@@ -30,12 +31,9 @@ public class ApiMethodDocModel implements Comparable<ApiMethodDocModel> {
     private List<ApiDocModelRef> responses;
     private List<ApiErrorDocModel> apiErrors;
 
-    private String hint;
-
     public ApiMethodDocModel() {
         super();
     }
-
 
     @XmlAttribute(required = false)
     public String getHint() {

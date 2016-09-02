@@ -16,7 +16,7 @@ import java.util.Set;
 
 @ApiModelDoc("REST resource documentation.")
 @XmlRootElement(name = "apiDoc")
-@XmlType(propOrder = {"name", "className", "description", "errorResponseClass", "methods"})
+@XmlType(propOrder = {"name", "className", "description", "errorResponses", "methods"})
 public class ApiDocModel implements Comparable<ApiDocModel> {
     private String name;
     private String className;
