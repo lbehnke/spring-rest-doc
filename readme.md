@@ -55,8 +55,8 @@ Example REST Controller:
 Here is how the documentation is returned as XML or JSON object:
 
     private static  String[] PKG_NAMES = new String[]{
-            "com.apporiented.example.web.rest",
-            "com.apporiented.example.common.dto",
+            "example.web.rest",
+            "example.common.dto",
     };
 
     private DocumentationFactory documentationFactory = new DefaultDocumentationFactory();
