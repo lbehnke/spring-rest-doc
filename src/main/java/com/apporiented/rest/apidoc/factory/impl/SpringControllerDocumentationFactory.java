@@ -170,7 +170,7 @@ public class SpringControllerDocumentationFactory implements ControllerDocumenta
 
     private List<String> getConsumesList(RequestMapping classMapping, RequestMapping methodMapping) {
         List<String> consumes;
-        if (methodMapping.produces().length > 0) {
+        if (methodMapping.consumes().length > 0) {
             consumes = Arrays.asList(methodMapping.consumes());
         } else {
             consumes = Arrays.asList(classMapping.consumes());
