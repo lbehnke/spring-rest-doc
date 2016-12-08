@@ -201,7 +201,7 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
         return objectModel;
     }
 
-    private String[] createAllowedValues(Class<?> resultType) {
+    protected String[] createAllowedValues(Class<?> resultType) {
         String[] allowedValues = null;
         if (resultType.isEnum()) {
             List<String> consts = new ArrayList<>();
@@ -215,7 +215,7 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
         return nullIfEmpty(allowedValues);
     }
 
-    private String[] nullIfEmpty(String[] strings) {
+    protected String[] nullIfEmpty(String[] strings) {
         if (strings != null && strings.length == 0) {
             strings = null;
         }
@@ -276,11 +276,11 @@ public class JAXBModelDocFactory implements ModelDocumentationFactory {
         return modelRef;
     }
 
-    private ClassInfo resolveClassInfo(Type type) {
+    protected ClassInfo resolveClassInfo(Type type) {
         return resolveClassInfo(type, null);
     }
 
-    private ClassInfo resolveClassInfo(Type type, Integer paramTypeIdx) {
+    protected ClassInfo resolveClassInfo(Type type, Integer paramTypeIdx) {
         ClassInfo result = null;
         if (type != null) {
             if (type instanceof ParameterizedType) {

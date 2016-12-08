@@ -11,8 +11,6 @@ import com.apporiented.rest.apidoc.model.Documentation;
  */
 public interface DocumentationFactory {
 
-    public Documentation createDocumentation(String version, String basePath, ClassLoader... classloaders);
-
     public Documentation createDocumentation(String version, String basePath, Class<?>... classes);
 
     public Documentation createDocumentation(String version, String basePath, String... packageNames);

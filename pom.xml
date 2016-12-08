@@ -43,9 +43,11 @@
     </developers>
 
     <properties>
+        <mavenVersion>3.2.1</mavenVersion>
         <github.global.server>github</github.global.server>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <!--
             Guava is a suite of core and expanded libraries that include utility classes, google's collections,
             io classes, and much much more. Guava has only one code dependency - javax.annotations, per the JSR-305 spec.
@@ -135,11 +137,11 @@
 
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 

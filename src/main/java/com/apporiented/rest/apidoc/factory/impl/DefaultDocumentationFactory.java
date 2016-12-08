@@ -15,8 +15,6 @@ import com.google.common.base.Strings;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.*;
@@ -37,25 +35,27 @@ import java.util.*;
  */
 public class DefaultDocumentationFactory implements DocumentationFactory {
 
-    private static Logger log = LoggerFactory.getLogger(DefaultDocumentationFactory.class);
-
     private ControllerDocumentationFactory ctrlDocFactory;
     private ModelDocumentationFactory modelDocFactory;
+    private ClassLoader[] classLoaders;
 
     public DefaultDocumentationFactory() {
+        this(null);
+    }
+
+    public DefaultDocumentationFactory(ClassLoader[] cl) {
+        if (cl == null) {
+            cl = new ClassLoader[]{Thread.currentThread().getContextClassLoader()};
+        }
+        this.classLoaders = cl;
         this.modelDocFactory = new JAXBModelDocFactory();
         this.ctrlDocFactory = new SpringControllerDocumentationFactory(modelDocFactory);
     }
 
-    public DefaultDocumentationFactory(ControllerDocumentationFactory ctrlDocFactory, ModelDocumentationFactory modelDocFactory) {
+    public DefaultDocumentationFactory(ClassLoader[] cl, ControllerDocumentationFactory ctrlDocFactory, ModelDocumentationFactory modelDocFactory) {
+        this.classLoaders = cl;
         this.ctrlDocFactory = ctrlDocFactory;
         this.modelDocFactory = modelDocFactory;
-    }
-
-
-    public Documentation createDocumentation(String version, String basePath, ClassLoader... classloaders) {
-        Set<URL> urls = new HashSet<>(ClasspathHelper.forClassLoader(classloaders));
-        return createDocumentForUrls(version, basePath, urls);
     }
 
     public Documentation createDocumentation(String version, String basePath, Class<?>... classes) {
@@ -69,7 +69,8 @@ public class DefaultDocumentationFactory implements DocumentationFactory {
     public Documentation createDocumentation(String version, String basePath, String... packageNames) {
         Set<URL> urls = new HashSet<>();
         for (String pkgName : packageNames) {
-            urls.addAll(ClasspathHelper.forPackage(pkgName, (ClassLoader[]) null));
+            Collection<? extends URL> packageUrls = ClasspathHelper.forPackage(pkgName, classLoaders);
+            urls.addAll(packageUrls);
         }
         return createDocumentForUrls(version, basePath, urls);
     }
